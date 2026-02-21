@@ -469,7 +469,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// <remarks>
         /// Remove an existing role by its unique identifier.
         /// </remarks>
-        /// <returns>OK</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RolesDeleteAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -493,7 +493,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PermissionsPutAsync(string id, UpdatePermissionsCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<string> PermissionsPutAsync(string id, UpdatePermissionsCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -504,7 +504,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task ChangePasswordAsync(ChangePasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<string> ChangePasswordAsync(ChangePasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -515,7 +515,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task ConfirmEmailAsync(string userId, string code, string tenant, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<string> ConfirmEmailAsync(string userId, string code, string tenant, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -524,7 +524,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// <remarks>
         /// Delete a user by unique identifier.
         /// </remarks>
-        /// <returns>OK</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task UsersDeleteAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -546,7 +546,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// <remarks>
         /// Activate or deactivate a user account.
         /// </remarks>
-        /// <returns>OK</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task UsersPatchAsync(System.Guid id, ToggleUserStatusCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -614,7 +614,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task ResetPasswordAsync(string tenant, ResetPasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<string> ResetPasswordAsync(string tenant, ResetPasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -976,7 +976,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// <remarks>
         /// Remove an existing role by its unique identifier.
         /// </remarks>
-        /// <returns>OK</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task RolesDeleteAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1020,7 +1020,7 @@ namespace FSH.Playground.Blazor.ApiClient
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 204)
                         {
                             return;
                         }
@@ -1135,7 +1135,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PermissionsPutAsync(string id, UpdatePermissionsCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<string> PermissionsPutAsync(string id, UpdatePermissionsCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -1154,6 +1154,7 @@ namespace FSH.Playground.Blazor.ApiClient
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                 
@@ -1187,7 +1188,18 @@ namespace FSH.Playground.Blazor.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("Bad Request", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1218,7 +1230,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ChangePasswordAsync(ChangePasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<string> ChangePasswordAsync(ChangePasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -1234,6 +1246,7 @@ namespace FSH.Playground.Blazor.ApiClient
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                 
@@ -1265,7 +1278,12 @@ namespace FSH.Playground.Blazor.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         {
@@ -1296,7 +1314,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ConfirmEmailAsync(string userId, string code, string tenant, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<string> ConfirmEmailAsync(string userId, string code, string tenant, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (userId == null)
                 throw new System.ArgumentNullException("userId");
@@ -1314,6 +1332,7 @@ namespace FSH.Playground.Blazor.ApiClient
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                 
@@ -1350,7 +1369,12 @@ namespace FSH.Playground.Blazor.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         {
@@ -1379,7 +1403,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// <remarks>
         /// Delete a user by unique identifier.
         /// </remarks>
-        /// <returns>OK</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task UsersDeleteAsync(System.Guid id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1423,7 +1447,7 @@ namespace FSH.Playground.Blazor.ApiClient
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 204)
                         {
                             return;
                         }
@@ -1535,7 +1559,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// <remarks>
         /// Activate or deactivate a user account.
         /// </remarks>
-        /// <returns>OK</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task UsersPatchAsync(System.Guid id, ToggleUserStatusCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1586,9 +1610,15 @@ namespace FSH.Playground.Blazor.ApiClient
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 204)
                         {
                             return;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("Bad Request", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -2012,7 +2042,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ResetPasswordAsync(string tenant, ResetPasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<string> ResetPasswordAsync(string tenant, ResetPasswordCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -2032,6 +2062,7 @@ namespace FSH.Playground.Blazor.ApiClient
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                 
@@ -2063,7 +2094,12 @@ namespace FSH.Playground.Blazor.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         {
@@ -2227,6 +2263,12 @@ namespace FSH.Playground.Blazor.ApiClient
                         if (status_ == 200)
                         {
                             return;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("Not Found", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -2807,7 +2849,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RolesPostAsync(System.Guid id, AssignUserRolesCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<string> RolesPostAsync(System.Guid id, AssignUserRolesCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -2907,7 +2949,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task RolesPostAsync(System.Guid id, AssignUserRolesCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<string> RolesPostAsync(System.Guid id, AssignUserRolesCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -2926,6 +2968,7 @@ namespace FSH.Playground.Blazor.ApiClient
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                 
@@ -2959,7 +3002,18 @@ namespace FSH.Playground.Blazor.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("Bad Request", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -3311,6 +3365,12 @@ namespace FSH.Playground.Blazor.ApiClient
                         if (status_ == 200)
                         {
                             return;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("Not Found", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -4468,7 +4528,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpgradeAsync(string id, UpgradeTenantCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<UpgradeTenantCommandResponse> UpgradeAsync(string id, UpgradeTenantCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -4670,7 +4730,7 @@ namespace FSH.Playground.Blazor.ApiClient
         /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task UpgradeAsync(string id, UpgradeTenantCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<UpgradeTenantCommandResponse> UpgradeAsync(string id, UpgradeTenantCommand body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -4689,6 +4749,7 @@ namespace FSH.Playground.Blazor.ApiClient
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                 
@@ -4722,7 +4783,18 @@ namespace FSH.Playground.Blazor.ApiClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<UpgradeTenantCommandResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("Bad Request", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8080,6 +8152,9 @@ namespace FSH.Playground.Blazor.ApiClient
 
     }
 
+    /// <summary>
+    /// Represents a file upload request with filename, content type, and data.
+    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class FileUploadRequest
     {
@@ -9039,6 +9114,29 @@ namespace FSH.Playground.Blazor.ApiClient
         [System.Text.Json.Serialization.JsonPropertyName("extendedExpiryDate")]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset ExtendedExpiryDate { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class UpgradeTenantCommandResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("newValidity")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.DateTimeOffset NewValidity { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("tenant")]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Tenant { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

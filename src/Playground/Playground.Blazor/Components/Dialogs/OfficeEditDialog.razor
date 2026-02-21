@@ -1,0 +1,53 @@
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@namespace FSH.Playground.Blazor.Components.Dialogs
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField @bind-Value="code" Label="Code" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="name" Label="Office Name" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="location" Label="Location" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">@(IsCreate ? "Create" : "Update")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    [Parameter] public bool IsCreate { get; set; } = true;
+    [Parameter] public object Office { get; set; }
+
+    private bool success;
+    private MudForm form;
+    private string code = "";
+    private string name = "";
+    private string location = "";
+
+    protected override void OnInitialized()
+    {
+        if (!IsCreate && Office != null)
+        {
+            dynamic office = Office;
+            code = office.Code ?? "";
+            name = office.Name ?? "";
+            location = office.Location ?? "";
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(new { Code = code, Name = name, Location = location }));
+        }
+    }
+
+    private async Task Cancel() => MudDialog.Cancel();
+}

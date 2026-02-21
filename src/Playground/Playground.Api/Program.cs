@@ -1,5 +1,6 @@
 ﻿using FSH.Framework.Web;
 using FSH.Framework.Web.Modules;
+using FSH.Modules.AssetInventory;
 using FSH.Modules.Auditing;
 using FSH.Modules.Identity;
 using FSH.Modules.Identity.Contracts.v1.Tokens.TokenGeneration;
@@ -7,6 +8,7 @@ using FSH.Modules.Identity.Features.v1.Tokens.TokenGeneration;
 using FSH.Modules.Multitenancy;
 using FSH.Modules.Multitenancy.Contracts.v1.GetTenantStatus;
 using FSH.Modules.Multitenancy.Features.v1.GetTenantStatus;
+using FSH.Modules.SemiExpendableAssets;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,7 +45,9 @@ var moduleAssemblies = new Assembly[]
 {
     typeof(IdentityModule).Assembly,
     typeof(MultitenancyModule).Assembly,
-    typeof(AuditingModule).Assembly
+    typeof(AuditingModule).Assembly,
+    typeof(AssetInventoryModule).Assembly,
+    typeof(SemiExpendableAssetsModule).Assembly
 };
 
 builder.AddHeroPlatform(o =>

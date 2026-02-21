@@ -26,10 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\Web\Web.csproj" />
+    <ProjectReference Include="..\..\Modules\AssetInventory\Modules.AssetInventory\Modules.AssetInventory.csproj" />
     <ProjectReference Include="..\..\Modules\Auditing\Modules.Auditing.Contracts\Modules.Auditing.Contracts.csproj" />
     <ProjectReference Include="..\..\Modules\Auditing\Modules.Auditing\Modules.Auditing.csproj" />
     <ProjectReference Include="..\..\Modules\Identity\Modules.Identity\Modules.Identity.csproj" />
     <ProjectReference Include="..\..\Modules\Multitenancy\Modules.Multitenancy\Modules.Multitenancy.csproj" />
+    <ProjectReference Include="..\..\Modules\SemiExpendableAssets\Modules.SemiExpendableAssets\Modules.SemiExpendableAssets.csproj" />
     <ProjectReference Include="..\Migrations.PostgreSQL\Migrations.PostgreSQL.csproj" />
   </ItemGroup>
 

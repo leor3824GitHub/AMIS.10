@@ -1,0 +1,22 @@
+@using MudBlazor
+@namespace FSH.Playground.Blazor.Components.Dialogs
+
+<MudDialog>
+    <DialogContent>
+        <p>@Message</p>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="Confirm">Delete</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    [Parameter] public string Message { get; set; } = "Are you sure?";
+
+    private async Task Cancel() => MudDialog.Cancel();
+    private async Task Confirm() => MudDialog.Close(DialogResult.Ok(true));
+}

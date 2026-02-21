@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Modules.AssetInventory.Contracts</RootNamespace>
+		<AssemblyName>FSH.Modules.AssetInventory.Contracts</AssemblyName>
+		<PackageId>FullStackHero.Modules.AssetInventory.Contracts</PackageId>
+	</PropertyGroup>
+
+</Project>

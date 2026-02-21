@@ -1,0 +1,213 @@
+@page "/semi-expendable-assets"
+@using FSH.Framework.Blazor.UI.Components.Cards
+@inherits ComponentBase
+
+<FshPageHeader Title="Semi-Expendable Assets"
+               Description="Track and manage semi-expendable property and equipment" />
+
+<MudGrid>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Assignment"
+                     IconColor="Color.Primary"
+                     Value="@totalItems.ToString()"
+                     Label="Total Items" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.CheckCircle"
+                     IconColor="Color.Success"
+                     Value="@availableItems.ToString()"
+                     Label="Available Items" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.GetApp"
+                     IconColor="Color.Info"
+                     Value="@issuedItems.ToString()"
+                     Label="Issued to Users" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Warning"
+                     IconColor="Color.Warning"
+                     Value="@maintenanceItems.ToString()"
+                     Label="Needs Maintenance" />
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudTabs>
+        <MudTabPanel Text="Inventory">
+            <MudText Typo="Typo.h6" Class="mb-4">Semi-Expendable Assets Inventory</MudText>
+            
+            <MudStack Row="true" Class="mb-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                    <MudIcon Icon="@Icons.Material.Filled.Add" /> Add New Item
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary">
+                    <MudIcon Icon="@Icons.Material.Filled.FileDownload" /> Export
+                </MudButton>
+            </MudStack>
+
+            <MudDataGrid Items="@inventoryItems" T="InventoryItem" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Code" Title="Item Code" />
+                    <PropertyColumn Property="x => x.Description" Title="Description" />
+                    <PropertyColumn Property="x => x.Category" Title="Category" />
+                    <PropertyColumn Property="x => x.Quantity" Title="Quantity" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <PropertyColumn Property="x => x.Status" Title="Status" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Primary">View</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small">Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Info">Assign</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50, 100})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No semi-expendable assets recorded yet. <MudLink Href="#">Add your first item</MudLink> to get started.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Assignments">
+            <MudText Typo="Typo.h6" Class="mb-4">Item Assignments to Personnel</MudText>
+            
+            <MudStack Row="true" Class="mb-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                    <MudIcon Icon="@Icons.Material.Filled.Add" /> New Assignment
+                </MudButton>
+            </MudStack>
+
+            <MudDataGrid Items="@assignments" T="Assignment" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.ItemCode" Title="Item" />
+                    <PropertyColumn Property="x => x.AssignedTo" Title="Assigned To" />
+                    <PropertyColumn Property="x => x.DateIssued" Title="Date Issued" Format="MM/dd/yyyy" />
+                    <PropertyColumn Property="x => x.Status" Title="Status" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Primary">View</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Warning">Return</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50, 100})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No assignments recorded yet.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Maintenance">
+            <MudText Typo="Typo.h6" Class="mb-4">Maintenance Schedule</MudText>
+            
+            <MudStack Row="true" Class="mb-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                    <MudIcon Icon="@Icons.Material.Filled.Add" /> Record Maintenance
+                </MudButton>
+            </MudStack>
+
+            <MudDataGrid Items="@maintenance" T="MaintenanceRecord" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.ItemCode" Title="Item" />
+                    <PropertyColumn Property="x => x.MaintenanceType" Title="Type" />
+                    <PropertyColumn Property="x => x.LastMaintained" Title="Last Maintained" Format="MM/dd/yyyy" />
+                    <PropertyColumn Property="x => x.NextDue" Title="Next Due" Format="MM/dd/yyyy" />
+                    <PropertyColumn Property="x => x.Status" Title="Status" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Primary">View</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small">Schedule</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50, 100})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No maintenance records yet.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+    </MudTabs>
+</MudPaper>
+
+@code {
+    private List<InventoryItem> inventoryItems = new();
+    private List<Assignment> assignments = new();
+    private List<MaintenanceRecord> maintenance = new();
+    private int totalItems = 0;
+    private int availableItems = 0;
+    private int issuedItems = 0;
+    private int maintenanceItems = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load data from API
+        await LoadData();
+    }
+
+    private Task LoadData()
+    {
+        // Mock data for demonstration
+        inventoryItems = new List<InventoryItem>
+        {
+            new() { Code = "SEA-001", Description = "Office Chair", Category = "Furniture", Quantity = 25, Location = "Main Office", Status = "Available" },
+            new() { Code = "SEA-002", Description = "Monitor 24 inch", Category = "IT", Quantity = 15, Location = "IT Room", Status = "Available" },
+            new() { Code = "SEA-003", Description = "Keyboard + Mouse Combo", Category = "IT", Quantity = 30, Location = "IT Room", Status = "Available" },
+            new() { Code = "SEA-004", Description = "Desk Lamp LED", Category = "Office", Quantity = 20, Location = "Main Office", Status = "Available" },
+            new() { Code = "SEA-005", Description = "USB Hub 7-port", Category = "IT", Quantity = 5, Location = "IT Room", Status = "Maintenance" },
+        };
+
+        assignments = new List<Assignment>
+        {
+            new() { ItemCode = "SEA-001", AssignedTo = "John Doe", DateIssued = DateTime.Now.AddMonths(-6), Status = "Issued" },
+            new() { ItemCode = "SEA-002", AssignedTo = "Jane Smith", DateIssued = DateTime.Now.AddMonths(-3), Status = "Issued" },
+            new() { ItemCode = "SEA-003", AssignedTo = "Mike Johnson", DateIssued = DateTime.Now.AddDays(-30), Status = "Issued" },
+        };
+
+        maintenance = new List<MaintenanceRecord>
+        {
+            new() { ItemCode = "SEA-005", MaintenanceType = "Repair", LastMaintained = DateTime.Now.AddMonths(-2), NextDue = DateTime.Now.AddMonths(2), Status = "Due Soon" },
+            new() { ItemCode = "SEA-001", MaintenanceType = "Cleaning", LastMaintained = DateTime.Now.AddMonths(-3), NextDue = DateTime.Now.AddMonths(1), Status = "Overdue" },
+        };
+
+        totalItems = inventoryItems.Sum(x => x.Quantity);
+        availableItems = inventoryItems.Where(x => x.Status == "Available").Sum(x => x.Quantity);
+        issuedItems = assignments.Count;
+        maintenanceItems = maintenance.Count(x => x.Status == "Due Soon" || x.Status == "Overdue");
+
+        return Task.CompletedTask;
+    }
+
+    private class InventoryItem
+    {
+        public string Code { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Category { get; set; } = "";
+        public int Quantity { get; set; }
+        public string Location { get; set; } = "";
+        public string Status { get; set; } = "";
+    }
+
+    private class Assignment
+    {
+        public string ItemCode { get; set; } = "";
+        public string AssignedTo { get; set; } = "";
+        public DateTime DateIssued { get; set; }
+        public string Status { get; set; } = "";
+    }
+
+    private class MaintenanceRecord
+    {
+        public string ItemCode { get; set; } = "";
+        public string MaintenanceType { get; set; } = "";
+        public DateTime LastMaintained { get; set; }
+        public DateTime NextDue { get; set; }
+        public string Status { get; set; } = "";
+    }
+}

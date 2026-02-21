@@ -1,0 +1,56 @@
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@namespace FSH.Playground.Blazor.Components.Dialogs
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField @bind-Value="name" Label="Supplier Name" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="address" Label="Address" Variant="Variant.Outlined" Lines="2" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="tin" Label="TIN" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="contactPerson" Label="Contact Person" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">@(IsCreate ? "Create" : "Update")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    [Parameter] public bool IsCreate { get; set; } = true;
+    [Parameter] public object Supplier { get; set; }
+
+    private bool success;
+    private MudForm form;
+    private string name = "";
+    private string address = "";
+    private string tin = "";
+    private string contactPerson = "";
+
+    protected override void OnInitialized()
+    {
+        if (!IsCreate && Supplier != null)
+        {
+            dynamic supp = Supplier;
+            name = supp.Name ?? "";
+            address = supp.Address ?? "";
+            tin = supp.TIN ?? "";
+            contactPerson = supp.ContactPerson ?? "";
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(new { Name = name, Address = address, TIN = tin, ContactPerson = contactPerson }));
+        }
+    }
+
+    private async Task Cancel() => MudDialog.Cancel();
+}

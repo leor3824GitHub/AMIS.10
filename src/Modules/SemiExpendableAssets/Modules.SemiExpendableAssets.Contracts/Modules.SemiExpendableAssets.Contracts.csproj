@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Modules.SemiExpendableAssets.Contracts</RootNamespace>
+		<AssemblyName>FSH.Modules.SemiExpendableAssets.Contracts</AssemblyName>
+		<PackageId>FullStackHero.Modules.SemiExpendableAssets.Contracts</PackageId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\BuildingBlocks\Shared\Shared.csproj" />
+	</ItemGroup>
+
+</Project>

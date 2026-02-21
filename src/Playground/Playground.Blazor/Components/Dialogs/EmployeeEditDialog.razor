@@ -1,0 +1,79 @@
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@namespace FSH.Playground.Blazor.Components.Dialogs
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField @bind-Value="firstName" Label="First Name" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="lastName" Label="Last Name" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="email" Label="Email" InputType="InputType.Email" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudTextField @bind-Value="position" Label="Position" Variant="Variant.Outlined" Class="mt-4" Required="true" />
+            <MudSelect @bind-Value="officeName" Label="Office" Variant="Variant.Outlined" Class="mt-4" Required="true">
+                @foreach (var office in GetOfficeNames())
+                {
+                    <MudSelectItem Value="@office">@office</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">@(IsCreate ? "Create" : "Update")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    [Parameter] public bool IsCreate { get; set; } = true;
+    [Parameter] public object Employee { get; set; }
+    [Parameter] public List<object> Offices { get; set; } = new();
+
+    private bool success;
+    private MudForm form;
+    private string firstName = "";
+    private string lastName = "";
+    private string email = "";
+    private string position = "";
+    private string officeName = "";
+
+    protected override void OnInitialized()
+    {
+        if (!IsCreate && Employee != null)
+        {
+            dynamic emp = Employee;
+            firstName = emp.FirstName ?? "";
+            lastName = emp.LastName ?? "";
+            email = emp.Email ?? "";
+            position = emp.Position ?? "";
+            officeName = emp.OfficeName ?? "";
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(new { FirstName = firstName, LastName = lastName, Email = email, Position = position, OfficeName = officeName }));
+        }
+    }
+
+    private async Task Cancel() => MudDialog.Cancel();
+
+    private List<string> GetOfficeNames()
+    {
+        var names = new List<string>();
+        if (Offices != null)
+        {
+            foreach (var office in Offices)
+            {
+                dynamic o = office;
+                names.Add(o.Name ?? "");
+            }
+        }
+        return names;
+    }
+}

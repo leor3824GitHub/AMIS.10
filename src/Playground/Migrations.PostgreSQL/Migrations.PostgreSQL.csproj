@@ -11,11 +11,15 @@
 	  <ProjectReference Include="..\..\Modules\Auditing\Modules.Auditing\Modules.Auditing.csproj" />
 	  <ProjectReference Include="..\..\Modules\Identity\Modules.Identity\Modules.Identity.csproj" />
 	  <ProjectReference Include="..\..\Modules\Multitenancy\Modules.Multitenancy\Modules.Multitenancy.csproj" />
+	  <ProjectReference Include="..\..\Modules\AssetInventory\Modules.AssetInventory\Modules.AssetInventory.csproj" />
+	  <ProjectReference Include="..\..\Modules\SemiExpendableAssets\Modules.SemiExpendableAssets\Modules.SemiExpendableAssets.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Audit\" />
 	  <Folder Include="MultiTenancy\" />
+	  <Folder Include="AssetInventory\" />
+	  <Folder Include="SemiExpendableAssets\" />
 	</ItemGroup>
 
 </Project>

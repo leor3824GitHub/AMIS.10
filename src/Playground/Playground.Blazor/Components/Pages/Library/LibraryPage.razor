@@ -1,0 +1,428 @@
+@page "/library"
+@using FSH.Framework.Blazor.UI.Components.Cards
+@using FSH.Playground.Blazor.ApiClient
+@inherits ComponentBase
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<FshPageHeader Title="Master Data Management"
+               Description="Manage reference data: asset categories, employees, offices, and suppliers" />
+
+<MudGrid>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Category"
+                     IconColor="Color.Primary"
+                     Value="@categories.Count.ToString()"
+                     Label="Asset Categories" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Groups"
+                     IconColor="Color.Success"
+                     Value="@employees.Count.ToString()"
+                     Label="Employees" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Business"
+                     IconColor="Color.Info"
+                     Value="@offices.Count.ToString()"
+                     Label="Offices" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.LocalShipping"
+                     IconColor="Color.Warning"
+                     Value="@suppliers.Count.ToString()"
+                     Label="Suppliers" />
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudTabs>
+        <MudTabPanel Text="Asset Categories">
+            <MudText Typo="Typo.h6" Class="mb-4">Asset Categories</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mb-4" OnClick="@AddCategory">
+                <MudIcon Icon="@Icons.Material.Filled.Add" /> New Category
+            </MudButton>
+            <MudDataGrid Items="@categories" T="CategoryData" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Code" Title="Code" />
+                    <PropertyColumn Property="x => x.Name" Title="Category Name" />
+                    <PropertyColumn Property="x => x.Description" Title="Description" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@((e) => EditCategory(context.Item))">Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@((e) => DeleteCategory(context.Item))">Delete</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No categories found. Click "New Category" to get started.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Employees">
+            <MudText Typo="Typo.h6" Class="mb-4">Employees</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mb-4" OnClick="@AddEmployee">
+                <MudIcon Icon="@Icons.Material.Filled.Add" /> Add Employee
+            </MudButton>
+            <MudDataGrid Items="@employees" T="EmployeeData" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.FirstName" Title="First Name" />
+                    <PropertyColumn Property="x => x.LastName" Title="Last Name" />
+                    <PropertyColumn Property="x => x.Email" Title="Email" />
+                    <PropertyColumn Property="x => x.Position" Title="Position" />
+                    <PropertyColumn Property="x => x.OfficeName" Title="Office" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@((e) => EditEmployee(context.Item))">Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@((e) => DeleteEmployee(context.Item))">Delete</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No employees found. Click "Add Employee" to get started.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Offices">
+            <MudText Typo="Typo.h6" Class="mb-4">Offices</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mb-4" OnClick="@AddOffice">
+                <MudIcon Icon="@Icons.Material.Filled.Add" /> New Office
+            </MudButton>
+            <MudDataGrid Items="@offices" T="OfficeData" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Code" Title="Office Code" />
+                    <PropertyColumn Property="x => x.Name" Title="Office Name" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@((e) => EditOffice(context.Item))">Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@((e) => DeleteOffice(context.Item))">Delete</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No offices found. Click "New Office" to get started.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Suppliers">
+            <MudText Typo="Typo.h6" Class="mb-4">Suppliers</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mb-4" OnClick="@AddSupplier">
+                <MudIcon Icon="@Icons.Material.Filled.Add" /> Add Supplier
+            </MudButton>
+            <MudDataGrid Items="@suppliers" T="SupplierData" Hover="true" Dense="true" Striped="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Name" Title="Supplier Name" />
+                    <PropertyColumn Property="x => x.Address" Title="Address" />
+                    <PropertyColumn Property="x => x.TIN" Title="TIN (Tax ID)" />
+                    <PropertyColumn Property="x => x.ContactPerson" Title="Contact Person" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@((e) => EditSupplier(context.Item))">Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@((e) => DeleteSupplier(context.Item))">Delete</MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50})" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Class="m-4">No suppliers found. Click "Add Supplier" to get started.</MudText>
+                </NoRecordsContent>
+            </MudDataGrid>
+        </MudTabPanel>
+    </MudTabs>
+</MudPaper>
+
+@code {
+    private List<CategoryData> categories = new();
+    private List<EmployeeData> employees = new();
+    private List<OfficeData> offices = new();
+    private List<SupplierData> suppliers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMasterData();
+    }
+
+    private async Task LoadMasterData()
+    {
+        try
+        {
+            // Mock data for demonstration
+            categories = new List<CategoryData>
+            {
+                new() { Code = "CAT-001", Name = "IT Equipment", Description = "Computers, peripherals, networking equipment" },
+                new() { Code = "CAT-002", Name = "Furniture", Description = "Office furniture and fixtures" },
+                new() { Code = "CAT-003", Name = "Vehicles", Description = "Company vehicles and transportation" },
+            };
+
+            offices = new List<OfficeData>
+            {
+                new() { Code = "OFF-001", Name = "Headquarters", Location = "Manila" },
+                new() { Code = "OFF-002", Name = "Regional Office", Location = "Cebu" },
+                new() { Code = "OFF-003", Name = "Branch Office", Location = "Davao" },
+            };
+
+            employees = new List<EmployeeData>
+            {
+                new() { FirstName = "John", LastName = "Doe", Email = "john.doe@company.com", Position = "Manager", OfficeName = "Headquarters" },
+                new() { FirstName = "Jane", LastName = "Smith", Email = "jane.smith@company.com", Position = "Accountant", OfficeName = "Headquarters" },
+                new() { FirstName = "Mike", LastName = "Johnson", Email = "mike.johnson@company.com", Position = "IT Officer", OfficeName = "Regional Office" },
+            };
+
+            suppliers = new List<SupplierData>
+            {
+                new() { Name = "Tech Solutions Inc.", Address = "123 Tech Street, Manila", TIN = "123-456-789-000", ContactPerson = "Carlos Rodriguez" },
+                new() { Name = "Office Supplies Co.", Address = "456 Supply Avenue, Makati", TIN = "987-654-321-000", ContactPerson = "Maria Santos" },
+                new() { Name = "Furniture & Fixtures Ltd.", Address = "789 Design Boulevard, Quezon City", TIN = "555-666-777-000", ContactPerson = "Antonio Reyes" },
+            };
+
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+        }
+    }
+
+    // Category Operations
+    private async Task AddCategory()
+    {
+        var parameters = new DialogParameters<CategoryEditDialog> { { x => x.IsCreate, true } };
+        var dialog = await DialogService.ShowAsync<CategoryEditDialog>("New Asset Category", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is CategoryData newCategory)
+        {
+            categories.Add(newCategory);
+            Snackbar.Add("Category created successfully", Severity.Success);
+        }
+    }
+
+    private async Task EditCategory(CategoryData category)
+    {
+        var parameters = new DialogParameters<CategoryEditDialog> 
+        { 
+            { x => x.IsCreate, false },
+            { x => x.Category, category }
+        };
+        var dialog = await DialogService.ShowAsync<CategoryEditDialog>("Edit Asset Category", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is CategoryData updatedCategory)
+        {
+            var index = categories.IndexOf(category);
+            if (index >= 0) categories[index] = updatedCategory;
+            Snackbar.Add("Category updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task DeleteCategory(CategoryData category)
+    {
+        var parameters = new DialogParameters<ConfirmDialogComponent> 
+        { 
+            { x => x.Message, $"Delete category '{category.Name}'?" }
+        };
+        var dialog = await DialogService.ShowAsync<ConfirmDialogComponent>("Confirm Delete", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            categories.Remove(category);
+            Snackbar.Add("Category deleted successfully", Severity.Success);
+        }
+    }
+
+    // Employee Operations
+    private async Task AddEmployee()
+    {
+        var parameters = new DialogParameters
+        { 
+            { "IsCreate", true },
+            { "Offices", offices }
+        };
+        var dialog = await DialogService.ShowAsync<EmployeeEditDialog>("New Employee", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is EmployeeData newEmployee)
+        {
+            employees.Add(newEmployee);
+            Snackbar.Add("Employee added successfully", Severity.Success);
+        }
+    }
+
+    private async Task EditEmployee(EmployeeData employee)
+    {
+        var parameters = new DialogParameters
+        { 
+            { "IsCreate", false },
+            { "Employee", employee },
+            { "Offices", offices }
+        };
+        var dialog = await DialogService.ShowAsync<EmployeeEditDialog>("Edit Employee", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is EmployeeData updatedEmployee)
+        {
+            var index = employees.IndexOf(employee);
+            if (index >= 0) employees[index] = updatedEmployee;
+            Snackbar.Add("Employee updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task DeleteEmployee(EmployeeData employee)
+    {
+        var parameters = new DialogParameters<ConfirmDialogComponent> 
+        { 
+            { x => x.Message, $"Delete employee '{employee.FirstName} {employee.LastName}'?" }
+        };
+        var dialog = await DialogService.ShowAsync<ConfirmDialogComponent>("Confirm Delete", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            employees.Remove(employee);
+            Snackbar.Add("Employee deleted successfully", Severity.Success);
+        }
+    }
+
+    // Office Operations
+    private async Task AddOffice()
+    {
+        var parameters = new DialogParameters<OfficeEditDialog> { { x => x.IsCreate, true } };
+        var dialog = await DialogService.ShowAsync<OfficeEditDialog>("New Office", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is OfficeData newOffice)
+        {
+            offices.Add(newOffice);
+            Snackbar.Add("Office created successfully", Severity.Success);
+        }
+    }
+
+    private async Task EditOffice(OfficeData office)
+    {
+        var parameters = new DialogParameters<OfficeEditDialog> 
+        { 
+            { x => x.IsCreate, false },
+            { x => x.Office, office }
+        };
+        var dialog = await DialogService.ShowAsync<OfficeEditDialog>("Edit Office", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is OfficeData updatedOffice)
+        {
+            var index = offices.IndexOf(office);
+            if (index >= 0) offices[index] = updatedOffice;
+            Snackbar.Add("Office updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task DeleteOffice(OfficeData office)
+    {
+        var parameters = new DialogParameters<ConfirmDialogComponent> 
+        { 
+            { x => x.Message, $"Delete office '{office.Name}'?" }
+        };
+        var dialog = await DialogService.ShowAsync<ConfirmDialogComponent>("Confirm Delete", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            offices.Remove(office);
+            Snackbar.Add("Office deleted successfully", Severity.Success);
+        }
+    }
+
+    // Supplier Operations
+    private async Task AddSupplier()
+    {
+        var parameters = new DialogParameters<SupplierEditDialog> { { x => x.IsCreate, true } };
+        var dialog = await DialogService.ShowAsync<SupplierEditDialog>("New Supplier", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is SupplierData newSupplier)
+        {
+            suppliers.Add(newSupplier);
+            Snackbar.Add("Supplier added successfully", Severity.Success);
+        }
+    }
+
+    private async Task EditSupplier(SupplierData supplier)
+    {
+        var parameters = new DialogParameters<SupplierEditDialog> 
+        { 
+            { x => x.IsCreate, false },
+            { x => x.Supplier, supplier }
+        };
+        var dialog = await DialogService.ShowAsync<SupplierEditDialog>("Edit Supplier", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is SupplierData updatedSupplier)
+        {
+            var index = suppliers.IndexOf(supplier);
+            if (index >= 0) suppliers[index] = updatedSupplier;
+            Snackbar.Add("Supplier updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task DeleteSupplier(SupplierData supplier)
+    {
+        var parameters = new DialogParameters<ConfirmDialogComponent> 
+        { 
+            { x => x.Message, $"Delete supplier '{supplier.Name}'?" }
+        };
+        var dialog = await DialogService.ShowAsync<ConfirmDialogComponent>("Confirm Delete", parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            suppliers.Remove(supplier);
+            Snackbar.Add("Supplier deleted successfully", Severity.Success);
+        }
+    }
+
+    private class CategoryData
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+
+    private class EmployeeData
+    {
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Position { get; set; } = "";
+        public string? OfficeName { get; set; }
+    }
+
+    private class OfficeData
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Location { get; set; } = "";
+    }
+
+    private class SupplierData
+    {
+        public string Name { get; set; } = "";
+        public string Address { get; set; } = "";
+        public string TIN { get; set; } = "";
+        public string ContactPerson { get; set; } = "";
+    }
+}

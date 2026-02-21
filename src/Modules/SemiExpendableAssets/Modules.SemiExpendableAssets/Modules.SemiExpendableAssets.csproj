@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>FSH.Modules.SemiExpendableAssets</RootNamespace>
+		<AssemblyName>FSH.Modules.SemiExpendableAssets</AssemblyName>
+		<PackageId>FullStackHero.Modules.SemiExpendableAssets</PackageId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\BuildingBlocks\Core\Core.csproj" />
+		<ProjectReference Include="..\..\..\BuildingBlocks\Persistence\Persistence.csproj" />
+		<ProjectReference Include="..\..\..\BuildingBlocks\Web\Web.csproj" />
+		<ProjectReference Include="..\Modules.SemiExpendableAssets.Contracts\Modules.SemiExpendableAssets.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

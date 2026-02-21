@@ -18,7 +18,7 @@ public sealed class TenantDbContextFactory : IDesignTimeDbContextFactory<TenantD
 
         var provider = configuration["DatabaseOptions:Provider"] ?? "POSTGRESQL";
         var connectionString = configuration["DatabaseOptions:ConnectionString"]
-            ?? "Host=localhost;Database=fsh-tenant;Username=postgres;Password=postgres";
+            ?? throw new InvalidOperationException("DatabaseOptions:ConnectionString is required in appsettings.json");
         var migrationsAssembly = configuration["DatabaseOptions:MigrationsAssembly"]
             ?? "FSH.Playground.Migrations.PostgreSQL";
         var optionsBuilder = new DbContextOptionsBuilder<TenantDbContext>();

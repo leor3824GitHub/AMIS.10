@@ -1,0 +1,123 @@
+@page "/assets"
+@using FSH.Framework.Blazor.UI.Components.Cards
+@inherits ComponentBase
+
+<FshPageHeader Title="Asset Inventory"
+               Description="Manage and track fixed assets across your organization" />
+
+<MudGrid>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Inventory2"
+                     IconColor="Color.Primary"
+                     Value="@totalAssets.ToString()"
+                     Label="Total Assets" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.CheckCircle"
+                     IconColor="Color.Success"
+                     Value="@activeAssets.ToString()"
+                     Label="Active Assets" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.WarningAmber"
+                     IconColor="Color.Warning"
+                     Value="@depreciatedAssets.ToString()"
+                     Label="Depreciated Assets" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <FshStatCard Icon="@Icons.Material.Filled.Archive"
+                     IconColor="Color.Secondary"
+                     Value="@disposedAssets.ToString()"
+                     Label="Disposed Assets" />
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6" Class="mb-4">Assets Inventory</MudText>
+    
+    <MudStack Row="true" Class="mb-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">
+            <MudIcon Icon="@Icons.Material.Filled.Add" /> Register Asset
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary">
+            <MudIcon Icon="@Icons.Material.Filled.FileDownload" /> Export
+        </MudButton>
+    </MudStack>
+
+    <MudDataGrid Items="@assets" T="AssetData" Hover="true" Dense="true" Striped="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Tag" Title="Asset Tag" />
+            <PropertyColumn Property="x => x.Description" Title="Description" />
+            <PropertyColumn Property="x => x.Category" Title="Category" />
+            <PropertyColumn Property="x => x.Status" Title="Status" />
+            <PropertyColumn Property="x => x.AcquisitionDate" Title="Acquisition Date" />
+            <PropertyColumn Property="x => x.AcquisitionCost" Title="Cost" Format="C" />
+            <TemplateColumn Title="Actions" Sortable="false">
+                <CellTemplate>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Primary">View</MudButton>
+                    <MudButton Variant="Variant.Text" Size="Size.Small">Edit</MudButton>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error">Dispose</MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="@(new int[]{10, 25, 50, 100})" />
+        </PagerContent>
+        <NoRecordsContent>
+            <MudText Class="m-4">No assets registered yet. <MudLink Href="#">Add your first asset</MudLink> to get started.</MudText>
+        </NoRecordsContent>
+    </MudDataGrid>
+</MudPaper>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6" Class="mb-4">Asset Depreciation Summary</MudText>
+    <MudChart ChartType="ChartType.Pie" 
+              InputData="@chartData" 
+              InputLabels="@chartLabels"
+              Height="300px" />
+</MudPaper>
+
+@code {
+    private List<AssetData> assets = new();
+    private int totalAssets = 0;
+    private int activeAssets = 0;
+    private int depreciatedAssets = 0;
+    private int disposedAssets = 0;
+    private double[] chartData = { 50, 30, 20 };
+    private string[] chartLabels = { "Active", "Depreciated", "Disposed" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load asset data from API
+        await LoadAssets();
+    }
+
+    private Task LoadAssets()
+    {
+        // Mock data for demonstration
+        assets = new List<AssetData>
+        {
+            new() { Tag = "AST-001", Description = "Desktop Computer", Category = "IT", Status = "Active", AcquisitionDate = DateTime.Now.AddYears(-2), AcquisitionCost = 1200m },
+            new() { Tag = "AST-002", Description = "Laptop Computer", Category = "IT", Status = "Active", AcquisitionDate = DateTime.Now.AddYears(-1), AcquisitionCost = 1500m },
+            new() { Tag = "AST-003", Description = "Printer HP M404", Category = "Office", Status = "Depreciated", AcquisitionDate = DateTime.Now.AddYears(-5), AcquisitionCost = 800m },
+            new() { Tag = "AST-004", Description = "Conference Table", Category = "Furniture", Status = "Active", AcquisitionDate = DateTime.Now.AddYears(-3), AcquisitionCost = 2000m },
+        };
+
+        totalAssets = assets.Count;
+        activeAssets = assets.Count(a => a.Status == "Active");
+        depreciatedAssets = assets.Count(a => a.Status == "Depreciated");
+        disposedAssets = assets.Count(a => a.Status == "Disposed");
+
+        return Task.CompletedTask;
+    }
+
+    private class AssetData
+    {
+        public string Tag { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Category { get; set; } = "";
+        public string Status { get; set; } = "";
+        public DateTime AcquisitionDate { get; set; }
+        public decimal AcquisitionCost { get; set; }
+    }
+}
